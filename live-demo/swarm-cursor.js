@@ -452,8 +452,8 @@
     const next = targets.find(el => el.classList.contains('swc-pending') && !jobs.has(el) && eligible(el));
     if (!next) return;
     const r = next.getBoundingClientRect();
-    const dy = Math.min(r.top - innerHeight * .3, innerHeight * .7);
-    smoothScrollTo(scrollY + dy, Math.max(1200, Math.min(2600, Math.abs(dy) * 2.4 * SPEED)));
+    const dy = Math.min(r.top - innerHeight * .3, innerHeight * .5);
+    smoothScrollTo(scrollY + dy, Math.max(2400, Math.min(4800, Math.abs(dy) * 5 * SPEED)));
   }
 
   function stopAutopilot(e) {
