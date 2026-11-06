@@ -78,6 +78,7 @@
   .swc-h.a{left:-4px;top:-4px}.swc-h.b{right:-4px;top:-4px}.swc-h.c{left:-4px;bottom:-4px}.swc-h.d{right:-4px;bottom:-4px}
   .swc-dim{position:absolute;right:-2px;bottom:-22px;padding:1px 6px;border-radius:3px;font:600 9px/1.6 ${mono};color:#0a0a12;white-space:nowrap}
   .swc-ghost{position:absolute;left:0;top:0;border:1px dashed rgba(170,190,255,.28);border-radius:2px;box-sizing:border-box;background:rgba(120,140,255,.03);transition:opacity .3s}
+  .swc-ghost.solid{border:1px solid rgba(110,150,255,.6);border-radius:3px;background:linear-gradient(180deg,rgba(205,210,225,.22),rgba(170,178,198,.16));box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
   .swc-guide{position:absolute;left:0;top:0;opacity:0;transition:opacity .25s}
   .swc-guide.on{opacity:.45}
   .swc-guide.h{width:100%;height:0;border-top:1px dashed}
@@ -212,7 +213,7 @@
 
   function enqueue(el) {
     if (jobs.has(el) || !el.classList.contains('swc-pending')) return;
-    const ghost = make('div', 'swc-ghost', layer);
+    const ghost = make('div', demo ? 'swc-ghost solid' : 'swc-ghost', layer);
     const job = { el, ghost, agent: null, since: performance.now() };
     jobs.set(el, job);
     queue.push(job);
@@ -451,7 +452,8 @@
     const next = targets.find(el => el.classList.contains('swc-pending') && !jobs.has(el) && eligible(el));
     if (!next) return;
     const r = next.getBoundingClientRect();
-    smoothScrollTo(scrollY + r.top - innerHeight * .28, 1300);
+    const dy = Math.min(r.top - innerHeight * .3, innerHeight * .7);
+    smoothScrollTo(scrollY + dy, Math.max(1200, Math.min(2600, Math.abs(dy) * 2.4 * SPEED)));
   }
 
   function stopAutopilot(e) {
