@@ -12,6 +12,8 @@
  *   data-targets="h1, h2, .card"    CSS selector for the layers the swarm builds
  *   data-start-after="#loader"      wait until this element has class "done"
  *   data-agents="7"                 number of agents (default 7, or 22 in demo mode)
+ *   data-words=".hero h1"           headings to build word by word (demo mode)
+ *   data-speed="1"                  demo pace multiplier (higher is faster)
  * Disable with ?swarm=off in the URL. Skipped entirely for prefers-reduced-motion
  * (except in demo mode, which only runs when someone presses Start Build).
  */
@@ -45,10 +47,11 @@
     '.footer-inner h3', '.footer-inner p', '.footer-meta > div',
     '.swc-word'
   ].join(',');
-  const WORD_SPLIT = '.hero h1, .hero__sub, .section__title, .cta h2, .footer-inner h3';
+  const WORD_SPLIT = opts.words || '.hero h1, .hero__sub, .section__title, .cta h2, .footer-inner h3';
 
   const NAMES = ['Layout', 'Type', 'Grid', 'Motion', 'Copy', 'Colour', 'A11y', 'SEO', 'Spacing', 'Icons',
-    'Brand', 'Kerning', 'Shadows', 'Links', 'Perf', 'Tokens', 'Contrast', 'Responsive', 'Images', 'Nav', '3D', 'QA'];
+    'Brand', 'Kerning', 'Shadows', 'Links', 'Perf', 'Tokens', 'Contrast', 'Responsive', 'Images', 'Nav', '3D', 'QA',
+    'Pricing', 'Forms', 'Chat', 'Analytics', 'Ads', 'Booking', 'Social', 'Deploy'];
   const COLOURS = ['#4d7cff', '#ff5fa2', '#2fd18b', '#ffb020', '#b388ff', '#22d3ee', '#ff7a3d', '#a3e635',
     '#f472b6', '#60a5fa', '#facc15', '#34d399', '#c084fc', '#fb7185', '#38bdf8', '#fdba74'];
   const ROSTER = NAMES.map((name, i) => ({ name, color: COLOURS[i % COLOURS.length] }));
@@ -56,7 +59,7 @@
   const small = innerWidth < 780;
   const agentCount = Math.max(1, Math.min(ROSTER.length,
     parseInt(opts.agents, 10) || (demo ? (small ? 10 : 22) : (small ? 4 : 7))));
-  const SPEED = demo ? 0.8 : 1;
+  const SPEED = demo ? 0.8 / (parseFloat(opts.speed) || 1) : 1;
 
   /* ---------------- styles ---------------- */
   const mono = 'ui-monospace,SFMono-Regular,Menlo,Consolas,monospace';
@@ -246,7 +249,7 @@
     const c = el.classList;
     if (c.contains('swc-word')) return `set type "${s}"`;
     if (c.contains('project')) return 'framed project card';
-    if (c.contains('chip')) return 'painted gradient orb';
+    if (c.contains('chip') && !t) return 'painted gradient orb';
     if (c.contains('marquee')) return 'started marquee';
     if (c.contains('services')) return 'laid out services grid';
     if (c.contains('section__head')) return 'blocked out section header';
@@ -258,6 +261,15 @@
     if (c.contains('project__link')) return 'wired "View case" CTA';
     if (c.contains('service')) return 'framed service card';
     if (c.contains('nav__brand')) return 'placed logo';
+    if (c.contains('wcard')) return 'framed case study';
+    if (c.contains('deck')) return 'stacked service deck';
+    if (c.contains('plan')) return 'built pricing tier';
+    if (c.contains('plan__price')) return `set price ${s}`;
+    if (c.contains('bub')) return 'wrote chat bubble';
+    if (c.contains('chip')) return `added badge "${s}"`;
+    if (c.contains('btn') || el.tagName === 'BUTTON') return `wired button "${s}"`;
+    if (el.tagName === 'LI') return `ticked "${s}"`;
+    if (!t && el.querySelector('img') || el.tagName === 'IMG' || el.tagName === 'PICTURE') return 'placed image';
     if (el.tagName === 'A') return `wired link "${s}"`;
     if (/^H[1-6]$/.test(el.tagName)) return 'placed heading frame';
     if (el.tagName === 'P') return `wrote copy "${s}"`;
